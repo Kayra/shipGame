@@ -68,6 +68,8 @@ def test_moveShip_no_input(testGame):
 
 
 def test_moveShip_invalid_input(testGame):
+    testGame.initialiseShipLocations([((2, 3), 'N')])
+
     with pytest.raises(TypeError):
         testGame.moveShip('invalid')
 
@@ -79,6 +81,7 @@ def test_moveShip_invalid_input(testGame):
         testGame.moveShip((2, 3), 'invalid')
         testGame.moveShip('invalid', 'invalid')
         testGame.moveShip((4, 4), 'MM')
+        testGame.moveShip((2, 3), '')
 
 
 def test_moveShip_valid_input(testGame):

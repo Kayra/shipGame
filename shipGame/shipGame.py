@@ -56,6 +56,9 @@ class ShipGame(object):
         Example input: (0, 0), MRMLMM
         """
 
+        if not moveOperations:
+            raise TypeError("No move operations given.")
+
         for moveOperation in moveOperations:
             if moveOperation not in 'MRL':
                 raise ValueError("Invalid move operations.")
