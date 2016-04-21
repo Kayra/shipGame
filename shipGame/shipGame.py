@@ -1,12 +1,18 @@
+import sys
+
 
 class ShipGame(object):
 
     def __init__(self, filename):
+        self.sunkenShips = []
         inputFileContents = self.parseInputFile(filename)
         self.gameInformation = self.assignOperations(inputFileContents)
-        self.board = self.initialiseBoard(self.gameInformation['boardSize'])
-        self.initialiseShipLocations(self.gameInformation['shipLocations'])
-        self.sunkenShips = []
+
+        try:
+            self.board = self.initialiseBoard(self.gameInformation['boardSize'])
+            self.initialiseShipLocations(self.gameInformation['shipLocations'])
+        except KeyError:
+            sys.exit('Initialisation failed. Data missing from input file.')
 
 
     def initialiseBoard(self, size):
@@ -15,13 +21,16 @@ class ShipGame(object):
         Each cell can be empty, or occupied by a ship. This is denoted by a 0 integer value for empty,
         or one of N, E, S, W string values to specify the orientation for a ship in an occupied cell.
         """
-        board = {}
+        if type(size) is not int or size < 1:
+            raise ValueError('Board size must be a positive integer.')
 
-        for row in range(size):
-            for column in range(size):
-                board[(row, column)] = 0
+        else:
+            board = {}
+            for row in range(size):
+                for column in range(size):
+                    board[(row, column)] = 0
 
-        return board
+            return board
 
 
     def initialiseShipLocations(self, shipLocations):
@@ -133,7 +142,8 @@ class ShipGame(object):
         Example output: {'boardSize': 10,
                          'shipLocations': [(('0', '0'), 'N'),
                                            (('9', '2'), 'E')],
-                         'movingAndShootingCommands': }
+                         'movingAndShootingCommands': [((0, 0), 'MRMLMM'),
+                                                       (9, 2)]}
         """
 
         def parseShipLocations(shipLocationsString):
@@ -145,7 +155,8 @@ class ShipGame(object):
             """
             shipLocations = []
             for location in shipLocationsString.split(') ('):
-                shipLocation = location.translate(None, ',() ')
+                charactersToRemove = str.maketrans("", "", ",() ")
+                shipLocation = location.translate(charactersToRemove)
                 coordinates = int(shipLocation[0]), int(shipLocation[1])
                 direction = shipLocation[2]
                 shipLocations.append((coordinates, direction))
@@ -161,13 +172,15 @@ class ShipGame(object):
             """
 
             if isMoveCommand(operation):
-                operationString = operation.translate(None, ',() ')
+                charactersToRemove = str.maketrans("", "", ",() ")
+                operationString = operation.translate(charactersToRemove)
                 coordinates = (int(operationString[0]), int(operationString[1]))
                 moveCommands = operationString[2:]
                 return((coordinates, moveCommands))
 
             elif isShootCommand(operation):
-                operationString = operation.translate(None, ',() ')
+                charactersToRemove = str.maketrans("", "", ",() ")
+                operationString = operation.translate(charactersToRemove)
                 return((int(operationString[0]), int(operationString[1])))
 
         def isMoveCommand(operation):
@@ -187,7 +200,8 @@ class ShipGame(object):
             else:
                 movingAndShootingCommands.append(parseMoveOrShoot(operation))
 
-        gameInformation['movingAndShootingCommands'] = movingAndShootingCommands
+        if movingAndShootingCommands:
+            gameInformation['movingAndShootingCommands'] = movingAndShootingCommands
 
         return gameInformation
 
@@ -200,12 +214,14 @@ class ShipGame(object):
 
         for key, value in self.board.items():
             if value != 0:
-                string = '(' + str(key).translate(None, '()') + ', ' + value + ')'
+                charactersToRemove = str.maketrans("", "", "()")
+                string = '(' + str(key).translate(charactersToRemove) + ', ' + value + ')'
                 output.write(string)
                 output.write('\n')
 
         for ship in self.sunkenShips:
-            string = '(' + str(ship[0]).translate(None, '()') + ', ' + ship[1] + ') SUNK'
+            charactersToRemove = str.maketrans("", "", "()")
+            string = '(' + str(ship[0]).translate(charactersToRemove) + ', ' + ship[1] + ') SUNK'
             output.write(string)
             output.write('\n')
 
@@ -224,6 +240,7 @@ class ShipGame(object):
                 self.shootShip(operation)
 
 
-shipGame = ShipGame('input.txt')
-shipGame.calculateGame()
-shipGame.writeOutput()
+if __name__ == '__main__':
+    shipGame = ShipGame('input.txt')
+    shipGame.calculateGame()
+    shipGame.writeOutput()
