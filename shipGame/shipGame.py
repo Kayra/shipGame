@@ -5,6 +5,7 @@ class ShipGame(object):
 
     def __init__(self, filename):
         self.sunkenShips = []
+        self.compassMapping = ['N', 'E', 'S', 'W']
         inputFileContents = self.parseInputFile(filename)
         self.gameInformation = self.assignOperations(inputFileContents)
 
@@ -29,7 +30,6 @@ class ShipGame(object):
             for row in range(size):
                 for column in range(size):
                     board[(row, column)] = 0
-
             return board
 
 
@@ -38,10 +38,11 @@ class ShipGame(object):
         Place each ship into the appropriate cell on the existing board, with the correct orientation
         as the value for the cell.
         Example input for two ships: [((0, 0), 'N'), ((9, 2), 'E')]
+        Working with the assumption that the first location's direction persists.
         """
         for ship in shipLocations:
             coordinates = (ship[0][0], ship[0][1])
-            if self.board[coordinates] == 0:
+            if self.board[coordinates] == 0 and ship[1] in self.compassMapping:
                 self.board[coordinates] = ship[1]
 
 
@@ -54,6 +55,10 @@ class ShipGame(object):
         at the end of a move operation.
         Example input: (0, 0), MRMLMM
         """
+
+        for moveOperation in moveOperations:
+            if moveOperation not in 'MRL':
+                raise ValueError("Invalid move operations.")
 
         def getDirection(shipLocation):
             """
@@ -68,9 +73,7 @@ class ShipGame(object):
             Example input: 'N', 'L'
             """
 
-            compassMapping = ['N', 'E', 'S', 'W']
-
-            direction = compassMapping.index(initialDirection)
+            direction = self.compassMapping.index(initialDirection)
 
             if directionToTurn == 'R' and direction != 3:
                 direction += 1
@@ -81,7 +84,7 @@ class ShipGame(object):
             elif directionToTurn == 'L' and direction == 0:
                 direction = 3
 
-            return compassMapping[direction]
+            return self.compassMapping[direction]
 
 
         def move(initialCoordinates, direction):
@@ -103,9 +106,12 @@ class ShipGame(object):
             return (x, y)
 
         direction = getDirection(shipLocation)
-        location = shipLocation
 
-        self.board[location] = 0
+        if direction == 0:
+            raise ValueError("Attempting to move a ship that does not exist.")
+
+        location = shipLocation
+        initialLocation = shipLocation
 
         for moveOperation in moveOperations:
             if moveOperation == 'M':
@@ -113,7 +119,11 @@ class ShipGame(object):
             elif moveOperation in ('L', 'R'):
                 direction = changeDirection(direction, moveOperation)
 
-        self.board[location] = direction
+        if 'M' not in moveOperations:
+            self.board[location] = direction
+        elif self.board[location] == 0:
+            self.board[initialLocation] = 0
+            self.board[location] = direction
 
 
     def shootShip(self, shipLocation):
@@ -232,6 +242,9 @@ class ShipGame(object):
 
         def isShootCommand(operation):
             return type(operation[1]) is int
+
+        if not self.gameInformation['movingAndShootingCommands']:
+            raise TypeError('No commands to calculate')
 
         for operation in self.gameInformation['movingAndShootingCommands']:
             if isMoveCommand(operation):
