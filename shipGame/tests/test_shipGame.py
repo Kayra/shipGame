@@ -1,5 +1,4 @@
 import pytest
-from pkg_resources import resource_filename
 from shipGame.app import ShipGame
 
 
@@ -178,8 +177,7 @@ def test_assignGameParameters_heavy_input(testGame):
                                             '(3, 5)',
                                             '(5, 6) MLRMRR',
                                             '(8, 4)',
-                                            '(7, 7) RMRMMRMMMR',
-                                            '(5, 3)'])
+                                            '(7, 7) RMRMMRMMMR','(5, 3)'])
     expected = {'boardSize': 10,
                 'movingAndShootingCommands': [((0, 0), 'MRMLMM'),
                                               (9, 2),
