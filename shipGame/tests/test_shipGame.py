@@ -149,37 +149,37 @@ def test_parseInputFile_valid_input(testGame):
     assert testGame.parseInputFile('tests/inputs/input.txt') == ['10', '(0, 0, N) (9, 2, E)', '(0, 0) MRMLMM', '(9, 2)']
 
 
-def test_assignOperations_no_input(testGame):
+def test_assignGameParameters_no_input(testGame):
     with pytest.raises(TypeError):
-        testGame.assignOperations()
+        testGame.assignGameParameters()
 
 
-def test_assignOperations_invalid_input(testGame):
+def test_assignGameParameters_invalid_input(testGame):
     with pytest.raises(ValueError):
-        testGame.assignOperations('invalid')
+        testGame.assignGameParameters('invalid')
 
 
-def test_assignOperations_valid_input(testGame):
-    actual = testGame.assignOperations(['10',
-                                        '(0, 0, N) (9, 2, E)',
-                                        '(0, 0) MRMLMM',
-                                        '(9, 2)'])
+def test_assignGameParameters_valid_input(testGame):
+    actual = testGame.assignGameParameters(['10',
+                                            '(0, 0, N) (9, 2, E)',
+                                            '(0, 0) MRMLMM',
+                                            '(9, 2)'])
     expected = {'boardSize': 10,
                 'movingAndShootingCommands': [((0, 0), 'MRMLMM'), (9, 2)],
                 'shipLocations': [((0, 0), 'N'), ((9, 2), 'E')]}
     assert actual == expected
 
 
-def test_assignOperaations_heavy_input(testGame):
-    actual = testGame.assignOperations(['10',
-                                        '(0, 0, N) (9, 2, E) (3, 4, E) (5, 6, W) (7, 7, S) (3, 3, W)',
-                                        '(0, 0) MRMLMM',
-                                        '(9, 2)',
-                                        '(3, 5)',
-                                        '(5, 6) MLRMRR',
-                                        '(8, 4)',
-                                        '(7, 7) RMRMMRMMMR',
-                                        '(5, 3)'])
+def test_assignGameParameters_heavy_input(testGame):
+    actual = testGame.assignGameParameters(['10',
+                                            '(0, 0, N) (9, 2, E) (3, 4, E) (5, 6, W) (7, 7, S) (3, 3, W)',
+                                            '(0, 0) MRMLMM',
+                                            '(9, 2)',
+                                            '(3, 5)',
+                                            '(5, 6) MLRMRR',
+                                            '(8, 4)',
+                                            '(7, 7) RMRMMRMMMR',
+                                            '(5, 3)'])
     expected = {'boardSize': 10,
                 'movingAndShootingCommands': [((0, 0), 'MRMLMM'),
                                               (9, 2),

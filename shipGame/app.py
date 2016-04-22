@@ -1,6 +1,8 @@
 import sys
 from pkg_resources import resource_filename
-from shipGame.utils import *
+from shipGame.utils import (isEmptyCell, isCompassDirection, deconstructShipLocation,
+                            formatShipLocationOutput, formatShipLocationInput, formatMoveCommandInput,
+                            formatShootCommandInput, isMoveCommand, isShootCommand)
 
 
 class ShipGame(object):
@@ -13,7 +15,7 @@ class ShipGame(object):
         self.sunkenShips = []
         self.compassMapping = ['N', 'E', 'S', 'W']
         inputFileContents = self.parseInputFile(filename)
-        self.gameInformation = self.assignOperations(inputFileContents)
+        self.gameInformation = self.assignGameParameters(inputFileContents)
 
         try:
             self.board = self.initialiseBoard(self.gameInformation['boardSize'])
@@ -50,7 +52,7 @@ class ShipGame(object):
             if isEmptyCell(self.board[coordinates]) and isCompassDirection(direction, self.compassMapping):
                 self.board[coordinates] = direction
 
-    def moveShip(self, shipLocation, moveOperations):
+    def moveShip(self, shipLocation, moveCommands):
         """
         Moves a ship specified by an initial coordinate a series of cells forward (in the direction
         that the ship is facing), and accordingly rotates it left and right.
@@ -61,10 +63,10 @@ class ShipGame(object):
         Working with the assumption that the bottom-left cell is the origin (0, 0).
         """
 
-        if not moveOperations:
+        if not moveCommands:
             raise TypeError("No move operations given.")
 
-        for moveOperation in moveOperations:
+        for moveOperation in moveCommands:
             if moveOperation not in 'MRL':
                 raise ValueError("Invalid move operations.")
 
@@ -130,13 +132,13 @@ class ShipGame(object):
         location = shipLocation
         initialLocation = shipLocation
 
-        for moveOperation in moveOperations:
-            if moveOperation == 'M':
+        for moveCommand in moveCommands:
+            if moveCommand == 'M':
                 location = move(location, direction)
-            elif moveOperation in ('L', 'R'):
-                direction = changeDirection(direction, moveOperation)
+            elif moveCommand in ('L', 'R'):
+                direction = changeDirection(direction, moveCommand)
 
-        if 'M' not in moveOperations:
+        if 'M' not in moveCommands:
             self.board[location] = direction
         elif self.board[location] == 0:
             self.board[initialLocation] = 0
@@ -164,9 +166,9 @@ class ShipGame(object):
         contents = open(file).read()
         return contents.splitlines()
 
-    def assignOperations(self, operations):
+    def assignGameParameters(self, parameters):
         """
-        Returns a dictionary containing the game operations from the contents of a text file.
+        Returns a dictionary containing the game parameters from the contents of a text file.
         Example input: ['10', '(0, 0, N) (9, 2, E)', '(0, 0) MRMLMM', '(9, 2)']
         Example output: {'boardSize': 10,
                          'shipLocations': [(('0', '0'), 'N'),
@@ -184,7 +186,7 @@ class ShipGame(object):
             """
             return [(formatShipLocationInput(location)) for location in shipLocationsString.split(') (')]
 
-        def parseMoveOrShoot(operationString):
+        def parseMoveOrShoot(commandString):
             """
             Parses a string of either a move or a shoot command and fomats it into a tuple
             containing the relevant information.
@@ -193,24 +195,24 @@ class ShipGame(object):
             Example input for shoot: '(9, 2)'
             Example output for shoot: (9, 2)
             """
-            if isMoveCommand(operationString):
-                coordinates, direction = formatMoveCommandInput(operationString)
+            if isMoveCommand(commandString):
+                coordinates, direction = formatMoveCommandInput(commandString)
                 return((coordinates, direction))
 
-            elif isShootCommand(operationString):
-                coordinates = formatShootCommandInput(operationString)
+            elif isShootCommand(commandString):
+                coordinates = formatShootCommandInput(commandString)
                 return((coordinates))
 
         gameInformation = {}
         movingAndShootingCommands = []
 
-        for index, operation in enumerate(operations):
+        for index, parameter in enumerate(parameters):
             if index == 0:
-                gameInformation['boardSize'] = int(operation)
+                gameInformation['boardSize'] = int(parameter)
             elif index == 1:
-                gameInformation['shipLocations'] = parseShipLocations(operation)
+                gameInformation['shipLocations'] = parseShipLocations(parameter)
             else:
-                movingAndShootingCommands.append(parseMoveOrShoot(operation))
+                movingAndShootingCommands.append(parseMoveOrShoot(parameter))
 
         if movingAndShootingCommands:
             gameInformation['movingAndShootingCommands'] = movingAndShootingCommands
@@ -246,11 +248,11 @@ class ShipGame(object):
         if not self.gameInformation['movingAndShootingCommands']:
             raise TypeError('No commands to calculate')
 
-        for operation in self.gameInformation['movingAndShootingCommands']:
-            if isMoveCommand(operation):
-                self.moveShip(operation[0], operation[1])
-            elif isShootCommand(operation):
-                self.shootShip(operation)
+        for command in self.gameInformation['movingAndShootingCommands']:
+            if isMoveCommand(command):
+                self.moveShip(command[0], command[1])
+            elif isShootCommand(command):
+                self.shootShip(command)
 
 
 if __name__ == '__main__':
