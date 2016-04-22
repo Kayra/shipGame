@@ -8,6 +8,6 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
-py.tests (run tests)
+py.test shipGame (run tests)
 
 python -m shipGame.app (calculate the game with the contents of shipGame/input.txt)
