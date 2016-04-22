@@ -1,5 +1,6 @@
 import pytest
-from shipGame.shipGame import ShipGame
+from pkg_resources import resource_filename
+from shipGame.app import ShipGame
 
 
 @pytest.fixture
@@ -159,11 +160,41 @@ def test_assignOperations_invalid_input(testGame):
 
 
 def test_assignOperations_valid_input(testGame):
-    assert testGame.assignOperations(['10', '(0, 0, N) (9, 2, E)', '(0, 0) MRMLMM', '(9, 2)']) == {'boardSize': 10, 'movingAndShootingCommands': [((0, 0), 'MRMLMM'), (9, 2)], 'shipLocations': [((0, 0), 'N'), ((9, 2), 'E')]}
+    actual = testGame.assignOperations(['10',
+                                        '(0, 0, N) (9, 2, E)',
+                                        '(0, 0) MRMLMM',
+                                        '(9, 2)'])
+    expected = {'boardSize': 10,
+                'movingAndShootingCommands': [((0, 0), 'MRMLMM'), (9, 2)],
+                'shipLocations': [((0, 0), 'N'), ((9, 2), 'E')]}
+    assert actual == expected
 
 
 def test_assignOperaations_heavy_input(testGame):
-    assert testGame.assignOperations(['10', '(0, 0, N) (9, 2, E) (3, 4, E) (5, 6, W) (7, 7, S) (3, 3, W)', '(0, 0) MRMLMM', '(9, 2)', '(3, 5)', '(5, 6) MLRMRR', '(8, 4)', '(7, 7) RMRMMRMMMR', '(5, 3)']) == {'boardSize': 10, 'movingAndShootingCommands': [((0, 0), 'MRMLMM'), (9, 2), (3, 5), ((5, 6), 'MLRMRR'), (8, 4), ((7, 7), 'RMRMMRMMMR'), (5, 3)], 'shipLocations': [((0, 0), 'N'), ((9, 2), 'E'), ((3, 4), 'E'), ((5, 6), 'W'), ((7, 7), 'S'), ((3, 3), 'W')]}
+    actual = testGame.assignOperations(['10',
+                                        '(0, 0, N) (9, 2, E) (3, 4, E) (5, 6, W) (7, 7, S) (3, 3, W)',
+                                        '(0, 0) MRMLMM',
+                                        '(9, 2)',
+                                        '(3, 5)',
+                                        '(5, 6) MLRMRR',
+                                        '(8, 4)',
+                                        '(7, 7) RMRMMRMMMR',
+                                        '(5, 3)'])
+    expected = {'boardSize': 10,
+                'movingAndShootingCommands': [((0, 0), 'MRMLMM'),
+                                              (9, 2),
+                                              (3, 5),
+                                              ((5, 6), 'MLRMRR'),
+                                              (8, 4),
+                                              ((7, 7), 'RMRMMRMMMR'),
+                                              (5, 3)],
+                'shipLocations': [((0, 0), 'N'),
+                                  ((9, 2), 'E'),
+                                  ((3, 4), 'E'),
+                                  ((5, 6), 'W'),
+                                  ((7, 7), 'S'),
+                                  ((3, 3), 'W')]}
+    assert actual == expected
 
 
 def test_writeOutput_no_occupied_cells_or_sunken_ships(testGame):
@@ -172,7 +203,7 @@ def test_writeOutput_no_occupied_cells_or_sunken_ships(testGame):
 
     testGame.writeOutput()
 
-    output = open('output.txt').read()
+    output = open('shipGame/output.txt').read()
     contents = output.splitlines()
     assert contents == []
 
@@ -183,7 +214,7 @@ def test_writeOutput_no_occupied_cells(testGame):
 
     testGame.writeOutput()
 
-    output = open('output.txt').read()
+    output = open('shipGame/output.txt').read()
     contents = output.splitlines()
     assert contents == ['(0, 0, N) SUNK', '(9, 2, E) SUNK']
 
@@ -194,7 +225,7 @@ def test_writeOutput_no_sunken_ships(testGame):
 
     testGame.writeOutput()
 
-    output = open('output.txt').read()
+    output = open('shipGame/output.txt').read()
     contents = output.splitlines()
     assert contents == ['(7, 9, N)', '(9, 6, W)', '(6, 8, E)', '(0, 9, S)']
 
@@ -205,7 +236,7 @@ def test_writeOutput_valid_occupied_cells_and_sunken_ships(testGame):
 
     testGame.writeOutput()
 
-    output = open('output.txt').read()
+    output = open('shipGame/output.txt').read()
     contents = output.splitlines()
     assert contents == ['(7, 9, N)', '(9, 6, W)', '(6, 8, E)', '(0, 9, S)', '(0, 0, N) SUNK', '(9, 2, E) SUNK']
 
