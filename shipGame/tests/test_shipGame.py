@@ -13,13 +13,8 @@ def test_incomplete_input_file():
         testGame = ShipGame("tests/inputs/incompleteInput.txt")
 
 
-def test_initialiseBoard_size_of_zero(testGame):
-    with pytest.raises(ValueError):
-        testGame.initialiseBoard(0)
-
-
 def test_initialiseBoard_size_of_float(testGame):
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         testGame.initialiseBoard(1.5)
 
 

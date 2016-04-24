@@ -29,15 +29,15 @@ class ShipGame(object):
         Each cell can be empty, or occupied by a ship. This is denoted by a 0 integer value for empty,
         or one of N, E, S, W string values to specify the orientation for a ship in an occupied cell.
         """
-        if type(size) is not int or size < 1:
-            raise ValueError('Board size must be a positive integer.')
+        # if type(size) is not int or size < 1:
+        #     raise ValueError('Board size must be a positive integer.')
 
-        else:
-            board = {}
-            for row in range(size):
-                for column in range(size):
-                    board[(row, column)] = 0
-            return board
+        # else:
+        board = {}
+        for row in range(size):
+            for column in range(size):
+                board[(row, column)] = 0
+        return board
 
     def initialiseShipLocations(self, shipLocations):
         """
