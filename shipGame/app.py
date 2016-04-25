@@ -1,8 +1,7 @@
 import sys
 from pkg_resources import resource_filename
-from shipGame.utils import (isEmptyCell, isCompassDirection, deconstructShipLocation,
-                            formatShipLocationOutput, formatShipLocationInput, formatMoveCommandInput,
-                            formatShootCommandInput, isMoveCommand, isShootCommand)
+from shipGame.utils import (deconstructShipLocation, formatShipLocationOutput, formatShipLocationInput,
+                            formatMoveCommandInput, formatShootCommandInput, isMoveCommand, isShootCommand)
 
 
 class ShipGame(object):
@@ -29,10 +28,7 @@ class ShipGame(object):
         Each cell can be empty, or occupied by a ship. This is denoted by a 0 integer value for empty,
         or one of N, E, S, W string values to specify the orientation for a ship in an occupied cell.
         """
-        # if type(size) is not int or size < 1:
-        #     raise ValueError('Board size must be a positive integer.')
 
-        # else:
         board = {}
         for row in range(size):
             for column in range(size):
@@ -49,7 +45,7 @@ class ShipGame(object):
         """
         for ship in shipLocations:
             coordinates, direction = deconstructShipLocation(ship)
-            if isEmptyCell(self.board[coordinates]) and isCompassDirection(direction, self.compassMapping):
+            if self.board[coordinates] == 0 and direction in self.compassMapping:
                 self.board[coordinates] = direction
 
     def moveShip(self, shipLocation, moveCommands):

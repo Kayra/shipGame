@@ -1,23 +1,4 @@
 
-def isEmptyCell(cell):
-    """
-    Checks the game board to see if a cell is occupied or not.
-    Example input: 'N'
-    Example output: False
-    """
-    return cell == 0
-
-
-def isCompassDirection(valueToCheck, compassMapping):
-    """
-    Checks to see if the value passed in is a valid compass direction
-    or not.
-    Example input: 'N'
-    Example output: True
-    """
-    return valueToCheck in compassMapping
-
-
 def removeStringCharacters(string):
     """
     Removes unnecessary characters from a string.
