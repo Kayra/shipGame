@@ -1,7 +1,6 @@
 # shipGame
 
-### This was a code test for a company I applied to.
-### Very happy with how it turned out so keeping it here as a milestone of my progress.
+### This was a code test for a company I applied to. Very happy with how it turned out so keeping it here as a milestone of my progress.
 
 
 (Please ensure you have virtualenv and python3 installed)
