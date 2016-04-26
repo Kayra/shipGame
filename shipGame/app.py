@@ -64,7 +64,7 @@ class ShipGame(object):
 
         for moveOperation in moveCommands:
             if moveOperation not in 'MRL':
-                raise ValueError("Invalid move operations.")
+                raise ValueError("Invalid move operations. Must be in 'MRL'. %s was given." % moveOperation)
 
         def getDirection(shipLocation):
             """
